@@ -232,9 +232,12 @@ a:hover {
   box-shadow: var(--shadow-cyan);
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
   transform: translateY(-2px);
   box-shadow: 0 15px 35px -5px rgba(0, 242, 230, 0.6);
+  color: var(--color-black-deep);
 }
 
 .btn-outline {
@@ -501,9 +504,12 @@ a:hover {
   box-shadow: var(--shadow-cyan);
 }
 
-.header-cta:hover {
+.header-cta:hover,
+.header-cta:focus,
+.header-cta:active {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px -5px rgba(0, 242, 230, 0.5);
+  color: var(--color-black-deep);
 }
 
 .mobile-menu-toggle {
@@ -738,9 +744,12 @@ a:hover {
   box-shadow: var(--shadow-cyan);
 }
 
-.product-buy-btn:hover {
+.product-buy-btn:hover,
+.product-buy-btn:focus,
+.product-buy-btn:active {
   transform: translateY(-2px);
   box-shadow: 0 15px 35px -5px rgba(0, 242, 230, 0.6);
+  color: var(--color-black-deep);
 }
 
 .product-installment {
