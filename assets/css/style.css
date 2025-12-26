@@ -278,13 +278,25 @@ a:hover {
   align-items: center;
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #ffffff;
+  color: #FF0000;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-family: var(--font-body);
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
-  padding: 0 var(--space-2xl);
+  padding: 0 0 0 var(--space-2xl);
   white-space: nowrap;
+  position: relative;
+}
+
+.ticker-item::after {
+  content: '•';
+  margin-left: var(--space-2xl);
+  color: #FF0000;
+  font-size: 2em;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+  transform: translateY(-2px); /* Ajuste fino para centralização com tamanho maior */
 }
 
 @keyframes scroll-left {
@@ -304,8 +316,12 @@ a:hover {
   
   .ticker-item {
     font-size: var(--font-size-xs);
-    padding: 0 var(--space-lg);
+    padding: 0 0 0 var(--space-lg);
     letter-spacing: 0.5px;
+  }
+
+  .ticker-item::after {
+    margin-left: var(--space-lg);
   }
   
   .ticker-content {
