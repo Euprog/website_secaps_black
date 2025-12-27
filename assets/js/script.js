@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initProductCards();
     initParallaxEffect();
+    initHeroCarousel();
 });
 
 // ===================================
@@ -74,9 +75,15 @@ function initHeader() {
 function initScrollAnimations() {
     const scrollElements = document.querySelectorAll('.scroll-fade');
     
-    const elementInView = (el, offset = 100) => {
-        const elementTop = el.getBoundingClientRect().top;
-        return elementTop <= (window.innerHeight || document.documentElement.clientHeight) - offset;
+    const elementInView = (el, offset = 50) => {
+        const rect = el.getBoundingClientRect();
+        const windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+        
+        // Verifica se o elemento está visível na tela
+        return (
+            rect.top <= windowHeight - offset &&
+            rect.bottom >= offset
+        );
     };
     
     const displayScrollElement = (element) => {
@@ -89,8 +96,10 @@ function initScrollAnimations() {
     
     const handleScrollAnimation = () => {
         scrollElements.forEach((el) => {
-            if (elementInView(el, 100)) {
+            if (elementInView(el, 50)) {
                 displayScrollElement(el);
+            } else {
+                hideScrollElement(el);
             }
         });
     };
@@ -204,6 +213,27 @@ function initParallaxEffect() {
             ticking = true;
         }
     });
+}
+
+// ===================================
+// Hero Carousel
+// ===================================
+function initHeroCarousel() {
+    const carouselImages = document.querySelectorAll('.hero-carousel img');
+    if (!carouselImages.length) return;
+    
+    let currentIndex = 0;
+    
+    setInterval(() => {
+        // Remove active class from current image
+        carouselImages[currentIndex].classList.remove('active');
+        
+        // Calculate next index
+        currentIndex = (currentIndex + 1) % carouselImages.length;
+        
+        // Add active class to next image
+        carouselImages[currentIndex].classList.add('active');
+    }, 3000); // Change every 3 seconds
 }
 
 // ===================================
