@@ -488,11 +488,17 @@ function initCarousel() {
     nextButton.addEventListener('click', () => {
         if (counter >= slides.length - 1) return;
         moveToSlide(counter + 1);
+        stopSlide();
+        startSlide();
+        nextButton.blur(); // Remove focus
     });
 
     prevButton.addEventListener('click', () => {
         if (counter <= 0) return;
         moveToSlide(counter - 1);
+        stopSlide();
+        startSlide();
+        prevButton.blur(); // Remove focus
     });
 
     // Handle Transition End for Infinite Loop
@@ -517,6 +523,8 @@ function initCarousel() {
         const targetIndex = dots.findIndex(dot => dot === targetDot);
         // Map dot index to slide index (add 1 because of first clone)
         moveToSlide(targetIndex + 1);
+        stopSlide();
+        startSlide();
     });
     
     // Handle window resize
@@ -530,15 +538,16 @@ function initCarousel() {
     // Auto-play functionality
     let slideInterval;
 
+    const stopSlide = () => {
+        clearInterval(slideInterval);
+    };
+
     const startSlide = () => {
+        stopSlide(); // Clear any existing interval
         slideInterval = setInterval(() => {
             if (counter >= slides.length - 1) return;
             moveToSlide(counter + 1);
         }, 3000); // Change slide every 3 seconds
-    };
-
-    const stopSlide = () => {
-        clearInterval(slideInterval);
     };
 
     // Start auto-play

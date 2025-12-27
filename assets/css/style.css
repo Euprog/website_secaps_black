@@ -1019,10 +1019,20 @@ a:hover {
   transition: all 0.3s ease;
 }
 
-.carousel-btn:hover {
-  background: var(--color-cyan-primary);
-  color: var(--color-black-rich);
-  box-shadow: 0 0 15px var(--color-cyan-primary);
+@media (hover: hover) {
+  .carousel-btn:hover {
+    background: var(--color-cyan-primary);
+    color: var(--color-black-rich);
+    box-shadow: 0 0 15px var(--color-cyan-primary);
+  }
+}
+
+.carousel-btn:active,
+.carousel-btn:focus {
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-cyan-primary);
+  box-shadow: none;
+  outline: none;
 }
 
 .carousel-btn svg {
@@ -1598,17 +1608,34 @@ a:hover {
   }
 
   /* Mobile Hero Adjustments */
-  .btn-large {
-    padding: var(--space-md) var(--space-xl);
-    font-size: var(--font-size-base);
-    width: auto; /* Prevent full width if not desired, or keep default */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-title, .hero-subtitle {
+    order: 0;
   }
 
   .hero-image {
+    order: 1; /* Move image above button */
     max-width: 100%;
+    margin-top: var(--space-md);
+    transform: scale(1.35); /* Increase image size further */
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero-cta {
+    order: 2; /* Move button to bottom */
     margin-top: var(--space-lg);
-    transform: scale(1.2); /* Increase image size */
-    margin-bottom: var(--space-2xl);
+  }
+
+  .btn-large {
+    padding: var(--space-sm) var(--space-lg); /* Smaller button */
+    font-size: 0.9rem; /* Smaller font */
+    width: auto;
+    max-width: 80%; /* Prevent it from being too wide */
+    margin: 0 auto; /* Center it */
   }
 
   /* Fix Results Image Cropping */
@@ -1829,16 +1856,16 @@ a:hover {
   object-fit: cover;
   display: block;
   transition: transform var(--transition-slow);
-  transform: scale(1.35); /* Zoom in to crop out the rectangular background */
+  transform: scale(1.0); /* No zoom to show full image */
 }
 
 .specialist-frame:hover .specialist-img {
-  transform: scale(1.45); /* Zoom in slightly more on hover */
+  transform: scale(1.1); /* Slight zoom on hover */
 }
 
 .specialist-badge {
   position: absolute;
-  bottom: 2.5rem;
+  bottom: -2rem; /* Move below the image */
   right: auto; /* Reset right */
   left: 50%;
   transform: translateX(-50%); /* Center horizontally */
@@ -1899,9 +1926,14 @@ a:hover {
     padding: var(--space-md);
     margin-bottom: var(--space-xl);
   }
+
+  .specialist-frame {
+    width: 220px; /* Reduce size on mobile */
+    height: 220px;
+  }
   
   .specialist-badge {
-    bottom: var(--space-md); /* Adjusted bottom spacing */
+    bottom: -3rem; /* Move further down on mobile */
     /* Keep centered */
     width: 90%; /* Ensure it doesn't overflow screen width */
     justify-content: center;
@@ -1909,10 +1941,59 @@ a:hover {
   }
 
   .badge-text {
-    font-size: var(--font-size-sm); /* Reduce font size */
+    font-size: var(--font-size-xs); /* Reduce font size */
     white-space: normal; /* Allow wrapping if really needed, but try to keep one line */
     text-align: center;
   }
+
+  .specialist-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .specialist-content .section-title,
+  .specialist-content .section-subtitle,
+  .specialist-content .section-description {
+    text-align: center !important;
+  }
+
+  .specialist-content .benefits-list {
+    text-align: left; /* Keep list items left-aligned for readability, but centered block */
+    display: inline-block;
+    margin: 0 auto var(--space-xl);
+  }
+
+  .btn-specialist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.85rem; /* Slightly smaller to ensure fit */
+    padding: var(--space-md) var(--space-sm);
+    letter-spacing: 0.5px; /* Reduce spacing slightly */
+    text-transform: uppercase;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.whatsapp-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  filter: drop-shadow(0 0 5px #25D366) drop-shadow(0 0 10px #25D366); /* Neon Green Glow */
+  animation: shake 0.5s ease-in-out infinite;
 }
 
 /* ===================================
@@ -1989,5 +2070,12 @@ a:hover {
 @media only screen and (max-width: 700px) {
   .lightbox-image {
     width: 95%;
+  }
+}
+
+@media (min-width: 769px) {
+  .whatsapp-icon {
+    width: 32px;
+    height: 32px;
   }
 }
