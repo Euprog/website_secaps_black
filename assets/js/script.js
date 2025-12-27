@@ -368,3 +368,184 @@ createScrollProgress();
 // ===================================
 console.log('%c SecapsBlack ', 'background: linear-gradient(90deg, #00F2E6 0%, #33F5EB 100%); color: #000000; font-size: 20px; font-weight: bold; padding: 10px 20px;');
 console.log('%c Premium Quality • Extraordinary Results ', 'color: #00F2E6; font-size: 14px; font-weight: 600;');
+
+// ===================================
+// Lightbox Functionality
+// ===================================
+document.addEventListener('DOMContentLoaded', () => {
+    initLightbox();
+});
+
+function initLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.querySelector('.lightbox-image');
+    const closeBtn = document.querySelector('.lightbox-close');
+    const productImages = document.querySelectorAll('.product-image img');
+
+    if (!lightbox || !lightboxImg || !closeBtn) return;
+
+    // Open lightbox
+    productImages.forEach(img => {
+        img.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent card click event
+            lightbox.style.display = 'flex';
+            lightboxImg.src = img.src;
+            document.body.style.overflow = 'hidden'; // Disable scrolling
+        });
+    });
+
+    // Close lightbox functions
+    const closeLightbox = () => {
+        lightbox.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Enable scrolling
+    };
+
+    closeBtn.addEventListener('click', closeLightbox);
+
+    // Close when clicking outside the image
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    // Close with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+            closeLightbox();
+        }
+    });
+}
+
+// ===================================
+// Carousel Functionality
+// ===================================
+document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+});
+
+function initCarousel() {
+    const track = document.querySelector('.carousel-track');
+    if (!track) return;
+
+    // Get original slides
+    let slides = Array.from(track.children);
+    const nextButton = document.querySelector('.next-btn');
+    const prevButton = document.querySelector('.prev-btn');
+    const dotsNav = document.querySelector('.carousel-nav');
+    const dots = Array.from(dotsNav.children);
+
+    // Clone first and last slides for seamless looping
+    const firstClone = slides[0].cloneNode(true);
+    const lastClone = slides[slides.length - 1].cloneNode(true);
+    
+    firstClone.id = 'first-clone';
+    lastClone.id = 'last-clone';
+    
+    track.appendChild(firstClone);
+    track.insertBefore(lastClone, slides[0]);
+
+    // Re-query slides to include clones
+    slides = Array.from(track.children);
+
+    let slideWidth = slides[0].getBoundingClientRect().width;
+
+    // Arrange the slides next to one another
+    const setSlidePosition = (slide, index) => {
+        slide.style.left = slideWidth * index + 'px';
+    };
+    slides.forEach(setSlidePosition);
+
+    // Start at index 1 (the first real slide)
+    let counter = 1;
+    track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+    
+    // Set initial active dot
+    dots[0].classList.add('current-slide');
+
+    const updateDots = (index) => {
+        dots.forEach(dot => dot.classList.remove('current-slide'));
+        // Adjust index for dots (0-based, ignoring clones)
+        // counter 1 -> dot 0
+        // counter length-2 -> dot length-1
+        let dotIndex = index - 1;
+        if (dotIndex < 0) dotIndex = dots.length - 1;
+        if (dotIndex >= dots.length) dotIndex = 0;
+        
+        if (dots[dotIndex]) {
+            dots[dotIndex].classList.add('current-slide');
+        }
+    };
+
+    const moveToSlide = (index) => {
+        track.style.transition = 'transform 0.5s ease-in-out';
+        track.style.transform = 'translateX(' + (-slideWidth * index) + 'px)';
+        counter = index;
+        updateDots(counter);
+    };
+
+    // Button Listeners
+    nextButton.addEventListener('click', () => {
+        if (counter >= slides.length - 1) return;
+        moveToSlide(counter + 1);
+    });
+
+    prevButton.addEventListener('click', () => {
+        if (counter <= 0) return;
+        moveToSlide(counter - 1);
+    });
+
+    // Handle Transition End for Infinite Loop
+    track.addEventListener('transitionend', () => {
+        if (slides[counter].id === 'last-clone') {
+            track.style.transition = 'none';
+            counter = slides.length - 2;
+            track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+        }
+        if (slides[counter].id === 'first-clone') {
+            track.style.transition = 'none';
+            counter = 1;
+            track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+        }
+    });
+
+    // Dot Navigation
+    dotsNav.addEventListener('click', e => {
+        const targetDot = e.target.closest('button');
+        if (!targetDot) return;
+
+        const targetIndex = dots.findIndex(dot => dot === targetDot);
+        // Map dot index to slide index (add 1 because of first clone)
+        moveToSlide(targetIndex + 1);
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        slideWidth = slides[0].getBoundingClientRect().width;
+        slides.forEach(setSlidePosition);
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+    });
+
+    // Auto-play functionality
+    let slideInterval;
+
+    const startSlide = () => {
+        slideInterval = setInterval(() => {
+            if (counter >= slides.length - 1) return;
+            moveToSlide(counter + 1);
+        }, 3000); // Change slide every 3 seconds
+    };
+
+    const stopSlide = () => {
+        clearInterval(slideInterval);
+    };
+
+    // Start auto-play
+    startSlide();
+
+    // Pause on hover
+    const carouselContainer = document.querySelector('.carousel-container');
+    carouselContainer.addEventListener('mouseenter', stopSlide);
+    carouselContainer.addEventListener('mouseleave', startSlide);
+}

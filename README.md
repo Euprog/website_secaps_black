@@ -162,6 +162,11 @@ Integrado com **Hest** para processamento de pagamentos:
 - ✅ Nomenclatura atualizada para "Tratamento de X Meses"
 - ✅ Preços e parcelamentos atualizados
 - ✅ Links de checkout integrados
+- ✅ Seção "Nossa Especialista" adicionada
+- ✅ Lightbox para imagens dos produtos
+- ✅ Carrossel de resultados com loop infinito e auto-play
+- ✅ Rodapé simplificado e padronizado
+- ✅ Links de contato atualizados para WhatsApp oficial
 
 ## 📝 Licença
 
