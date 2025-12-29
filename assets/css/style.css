@@ -795,24 +795,54 @@ a:hover {
   padding: var(--space-lg) 0;
   border-top: 1px solid rgba(0, 242, 230, 0.2);
   border-bottom: 1px solid rgba(0, 242, 230, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.discount-badge {
+  background: #FF0000;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+  animation: pulse 2s infinite;
 }
 
 .product-price-original {
-  font-size: var(--font-size-base);
+  font-size: 1rem;
   color: var(--color-gray-medium);
   text-decoration: line-through;
-  margin-bottom: var(--space-sm);
+  text-decoration-color: #FF0000;
+  text-decoration-thickness: 2px;
+  margin-bottom: 0;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
 .product-price-current {
-  font-size: var(--font-size-4xl);
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 800;
   background: var(--gradient-cyan);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-family: var(--font-heading);
-  margin-bottom: var(--space-xs);
+  line-height: 1.1;
+  margin: var(--space-xs) 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 242, 230, 0.2));
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .product-discount {
