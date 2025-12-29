@@ -425,14 +425,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initCarousel() {
-    const track = document.querySelector('.carousel-track');
+    // Target specifically the results carousel section
+    const resultsSection = document.getElementById('resultados');
+    if (!resultsSection) return;
+    
+    const track = resultsSection.querySelector('.carousel-track');
     if (!track) return;
 
     // Get original slides
     let slides = Array.from(track.children);
-    const nextButton = document.querySelector('.next-btn');
-    const prevButton = document.querySelector('.prev-btn');
-    const dotsNav = document.querySelector('.carousel-nav');
+    const nextButton = resultsSection.querySelector('.next-btn');
+    const prevButton = resultsSection.querySelector('.prev-btn');
+    const dotsNav = resultsSection.querySelector('.carousel-nav');
     const dots = Array.from(dotsNav.children);
 
     // Clone first and last slides for seamless looping
@@ -463,6 +467,9 @@ function initCarousel() {
     // Set initial active dot
     dots[0].classList.add('current-slide');
 
+    // Flag to prevent multiple transitions at once
+    let isAnimating = false;
+
     const updateDots = (index) => {
         dots.forEach(dot => dot.classList.remove('current-slide'));
         // Adjust index for dots (0-based, ignoring clones)
@@ -478,28 +485,63 @@ function initCarousel() {
     };
 
     const moveToSlide = (index) => {
+        if (isAnimating) return; // Prevent clicks during animation
+        isAnimating = true;
+        
         track.style.transition = 'transform 0.5s ease-in-out';
         track.style.transform = 'translateX(' + (-slideWidth * index) + 'px)';
         counter = index;
         updateDots(counter);
+
+        // Safety timeout in case transitionend doesn't fire
+        setTimeout(() => {
+            isAnimating = false;
+        }, 600);
     };
 
     // Button Listeners
     nextButton.addEventListener('click', () => {
-        if (counter >= slides.length - 1) return;
+        if (counter >= slides.length - 1 || isAnimating) return;
         moveToSlide(counter + 1);
-        stopSlide();
-        startSlide();
-        nextButton.blur(); // Remove focus
+        stopSlide(); // Pause autoplay during manual interaction
+        nextButton.blur();
     });
 
     prevButton.addEventListener('click', () => {
-        if (counter <= 0) return;
+        if (counter <= 0 || isAnimating) return;
         moveToSlide(counter - 1);
-        stopSlide();
-        startSlide();
-        prevButton.blur(); // Remove focus
+        stopSlide(); // Pause autoplay during manual interaction
+        prevButton.blur();
     });
+
+    // Touch Support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    track.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopSlide();
+    }, { passive: true });
+
+    track.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        startSlide();
+        handleSwipe();
+    }, { passive: true });
+
+    const handleSwipe = () => {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swipe Left (Next)
+            if (counter >= slides.length - 1 || isAnimating) return;
+            moveToSlide(counter + 1);
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            // Swipe Right (Prev)
+            if (counter <= 0 || isAnimating) return;
+            moveToSlide(counter - 1);
+        }
+    };
 
     // Handle Transition End for Infinite Loop
     track.addEventListener('transitionend', () => {
@@ -507,12 +549,20 @@ function initCarousel() {
             track.style.transition = 'none';
             counter = slides.length - 2;
             track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+            void track.offsetWidth; // Force reflow
+            updateDots(counter); // Sync dots after jump
         }
         if (slides[counter].id === 'first-clone') {
             track.style.transition = 'none';
             counter = 1;
             track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+            void track.offsetWidth; // Force reflow
+            updateDots(counter); // Sync dots after jump
         }
+        
+        // Re-enable interactions and restart autoplay
+        isAnimating = false;
+        startSlide(); // Restart autoplay after animation completes
     });
 
     // Dot Navigation
@@ -554,7 +604,7 @@ function initCarousel() {
     startSlide();
 
     // Pause on hover
-    const carouselContainer = document.querySelector('.carousel-container');
+    const carouselContainer = resultsSection.querySelector('.carousel-container');
     carouselContainer.addEventListener('mouseenter', stopSlide);
     carouselContainer.addEventListener('mouseleave', startSlide);
 }
@@ -605,6 +655,9 @@ function initEbooksCarousel() {
     // Set initial active dot
     dots[0].classList.add('current-slide');
 
+    // Flag to prevent multiple transitions at once
+    let isAnimating = false;
+
     const updateDots = (index) => {
         dots.forEach(dot => dot.classList.remove('current-slide'));
         let dotIndex = index - 1;
@@ -617,28 +670,63 @@ function initEbooksCarousel() {
     };
 
     const moveToSlide = (index) => {
+        if (isAnimating) return; // Prevent clicks during animation
+        isAnimating = true;
+        
         track.style.transition = 'transform 0.5s ease-in-out';
         track.style.transform = 'translateX(' + (-slideWidth * index) + 'px)';
         counter = index;
         updateDots(counter);
+
+        // Safety timeout in case transitionend doesn't fire
+        setTimeout(() => {
+            isAnimating = false;
+        }, 600);
     };
 
     // Button Listeners
     nextButton.addEventListener('click', () => {
-        if (counter >= slides.length - 1) return;
+        if (counter >= slides.length - 1 || isAnimating) return;
         moveToSlide(counter + 1);
-        stopEbooksSlide();
-        startEbooksSlide();
+        stopEbooksSlide(); // Pause autoplay during manual interaction
         nextButton.blur();
     });
 
     prevButton.addEventListener('click', () => {
-        if (counter <= 0) return;
+        if (counter <= 0 || isAnimating) return;
         moveToSlide(counter - 1);
-        stopEbooksSlide();
-        startEbooksSlide();
+        stopEbooksSlide(); // Pause autoplay during manual interaction
         prevButton.blur();
     });
+
+    // Touch Support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    track.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopEbooksSlide();
+    }, { passive: true });
+
+    track.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        startEbooksSlide();
+        handleSwipe();
+    }, { passive: true });
+
+    const handleSwipe = () => {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swipe Left (Next)
+            if (counter >= slides.length - 1 || isAnimating) return;
+            moveToSlide(counter + 1);
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            // Swipe Right (Prev)
+            if (counter <= 0 || isAnimating) return;
+            moveToSlide(counter - 1);
+        }
+    };
 
     // Handle Transition End for Infinite Loop
     track.addEventListener('transitionend', () => {
@@ -646,12 +734,20 @@ function initEbooksCarousel() {
             track.style.transition = 'none';
             counter = slides.length - 2;
             track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+            void track.offsetWidth; // Force reflow
+            updateDots(counter); // Sync dots after jump
         }
         if (slides[counter].id === 'ebooks-first-clone') {
             track.style.transition = 'none';
             counter = 1;
             track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+            void track.offsetWidth; // Force reflow
+            updateDots(counter); // Sync dots after jump
         }
+        
+        // Re-enable interactions and restart autoplay
+        isAnimating = false;
+        startEbooksSlide(); // Restart autoplay after animation completes
     });
 
     // Dot Navigation

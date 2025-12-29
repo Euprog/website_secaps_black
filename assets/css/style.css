@@ -2178,6 +2178,12 @@ a:hover {
   margin: 0;
 }
 
+/* Hide navigation arrows for ebooks carousel */
+#ebooksPrevBtn,
+#ebooksNextBtn {
+  display: none !important;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .ebook-card {
