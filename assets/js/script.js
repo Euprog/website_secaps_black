@@ -558,3 +558,143 @@ function initCarousel() {
     carouselContainer.addEventListener('mouseenter', stopSlide);
     carouselContainer.addEventListener('mouseleave', startSlide);
 }
+
+// ===================================
+// E-books Carousel Functionality
+// ===================================
+document.addEventListener('DOMContentLoaded', () => {
+    initEbooksCarousel();
+});
+
+function initEbooksCarousel() {
+    const track = document.getElementById('ebooksCarouselTrack');
+    if (!track) return;
+
+    // Get original slides
+    let slides = Array.from(track.children);
+    const nextButton = document.getElementById('ebooksNextBtn');
+    const prevButton = document.getElementById('ebooksPrevBtn');
+    const dotsNav = document.getElementById('ebooksCarouselNav');
+    const dots = Array.from(dotsNav.children);
+
+    // Clone first and last slides for seamless looping
+    const firstClone = slides[0].cloneNode(true);
+    const lastClone = slides[slides.length - 1].cloneNode(true);
+    
+    firstClone.id = 'ebooks-first-clone';
+    lastClone.id = 'ebooks-last-clone';
+    
+    track.appendChild(firstClone);
+    track.insertBefore(lastClone, slides[0]);
+
+    // Re-query slides to include clones
+    slides = Array.from(track.children);
+
+    let slideWidth = slides[0].getBoundingClientRect().width;
+
+    // Arrange the slides next to one another
+    const setSlidePosition = (slide, index) => {
+        slide.style.left = slideWidth * index + 'px';
+    };
+    slides.forEach(setSlidePosition);
+
+    // Start at index 1 (the first real slide)
+    let counter = 1;
+    track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+    
+    // Set initial active dot
+    dots[0].classList.add('current-slide');
+
+    const updateDots = (index) => {
+        dots.forEach(dot => dot.classList.remove('current-slide'));
+        let dotIndex = index - 1;
+        if (dotIndex < 0) dotIndex = dots.length - 1;
+        if (dotIndex >= dots.length) dotIndex = 0;
+        
+        if (dots[dotIndex]) {
+            dots[dotIndex].classList.add('current-slide');
+        }
+    };
+
+    const moveToSlide = (index) => {
+        track.style.transition = 'transform 0.5s ease-in-out';
+        track.style.transform = 'translateX(' + (-slideWidth * index) + 'px)';
+        counter = index;
+        updateDots(counter);
+    };
+
+    // Button Listeners
+    nextButton.addEventListener('click', () => {
+        if (counter >= slides.length - 1) return;
+        moveToSlide(counter + 1);
+        stopEbooksSlide();
+        startEbooksSlide();
+        nextButton.blur();
+    });
+
+    prevButton.addEventListener('click', () => {
+        if (counter <= 0) return;
+        moveToSlide(counter - 1);
+        stopEbooksSlide();
+        startEbooksSlide();
+        prevButton.blur();
+    });
+
+    // Handle Transition End for Infinite Loop
+    track.addEventListener('transitionend', () => {
+        if (slides[counter].id === 'ebooks-last-clone') {
+            track.style.transition = 'none';
+            counter = slides.length - 2;
+            track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+        }
+        if (slides[counter].id === 'ebooks-first-clone') {
+            track.style.transition = 'none';
+            counter = 1;
+            track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+        }
+    });
+
+    // Dot Navigation
+    dotsNav.addEventListener('click', e => {
+        const targetDot = e.target.closest('button');
+        if (!targetDot) return;
+
+        const targetIndex = dots.findIndex(dot => dot === targetDot);
+        moveToSlide(targetIndex + 1);
+        stopEbooksSlide();
+        startEbooksSlide();
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        slideWidth = slides[0].getBoundingClientRect().width;
+        slides.forEach(setSlidePosition);
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(' + (-slideWidth * counter) + 'px)';
+    });
+
+    // Auto-play functionality
+    let ebooksSlideInterval;
+
+    const stopEbooksSlide = () => {
+        clearInterval(ebooksSlideInterval);
+    };
+
+    const startEbooksSlide = () => {
+        stopEbooksSlide();
+        ebooksSlideInterval = setInterval(() => {
+            if (counter >= slides.length - 1) return;
+            moveToSlide(counter + 1);
+        }, 3000);
+    };
+
+    // Start auto-play
+    startEbooksSlide();
+
+    // Pause on hover
+    const ebooksCarouselContainer = document.querySelector('#ebooks .carousel-container');
+    if (ebooksCarouselContainer) {
+        ebooksCarouselContainer.addEventListener('mouseenter', stopEbooksSlide);
+        ebooksCarouselContainer.addEventListener('mouseleave', startEbooksSlide);
+    }
+}
